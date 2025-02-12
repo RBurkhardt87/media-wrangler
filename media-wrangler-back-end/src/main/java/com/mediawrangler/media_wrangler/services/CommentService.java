@@ -4,6 +4,7 @@ import com.mediawrangler.media_wrangler.data.CommentRepository;
 import com.mediawrangler.media_wrangler.data.MovieReviewRepository;
 import com.mediawrangler.media_wrangler.data.UserRepository;
 import com.mediawrangler.media_wrangler.dto.CommentDTO;
+import com.mediawrangler.media_wrangler.dto.MovieReviewDTO;
 import com.mediawrangler.media_wrangler.dto.RatingDTO;
 import com.mediawrangler.media_wrangler.models.Comment;
 
@@ -78,10 +79,64 @@ public class CommentService {
             dto.setUserComment(comment.getUserComment());
             dto.setMovieReviewId(comment.getMovieReview().getId());        
             dto.setUsername(comment.getUser().getUsername());
+            dto.setFirstname(comment.getUser().getFirstname());
+            dto.setLastname(comment.getUser().getLastname());
 
             commentDTOS.add(dto);
         }
         return commentDTOS;
+    }
+
+    public Optional<CommentDTO> findCommentById(Long commentId) {
+        Optional<Comment> optionalComment = commentRepository.findById(commentId);
+
+        if (optionalComment.isPresent()) {
+            Comment comment = optionalComment.get();
+            CommentDTO commentDTO = new CommentDTO();
+
+            commentDTO.setId(comment.getId());
+            commentDTO.setUserId(comment.getUser().getId());
+            commentDTO.setUserComment(comment.getUserComment());
+            commentDTO.setMovieReviewId(comment.getMovieReview().getId());
+            commentDTO.setUsername(comment.getUser().getUsername());
+            commentDTO.setFirstname(comment.getUser().getFirstname());
+            commentDTO.setLastname(comment.getUser().getLastname());
+
+            return Optional.of(commentDTO);
+        }
+        return Optional.empty();
+    }
+
+
+    public Optional<CommentDTO> updatedComment(Long id, CommentDTO incomingComment, int userId) {
+        Optional<Comment> optionalComment = commentRepository.findByIdAndUserId(id, userId);
+
+        if (optionalComment.isPresent()) {
+            Comment comment = optionalComment.get();
+
+
+            comment.setUserComment(incomingComment.getUserComment());
+
+
+            Comment updatedComment = commentRepository.save(comment);
+            System.out.println("Updated comment: " + updatedComment.getUserComment());
+
+            CommentDTO commentDTO = new CommentDTO();
+
+            commentDTO.setId(comment.getId());
+            commentDTO.setUserId(comment.getUser().getId());
+            commentDTO.setUserComment(comment.getUserComment());
+            commentDTO.setMovieReviewId(comment.getMovieReview().getId());
+            commentDTO.setUsername(comment.getUser().getUsername());
+            commentDTO.setFirstname(comment.getUser().getFirstname());
+            commentDTO.setLastname(comment.getUser().getLastname());
+
+
+
+            return Optional.of(commentDTO);
+        }
+
+        return Optional.empty();
     }
 
 

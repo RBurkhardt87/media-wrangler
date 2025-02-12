@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 import com.mediawrangler.media_wrangler.services.MovieReviewService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,14 +28,10 @@ public class CommentController {
     @Autowired
     private final CommentService commentService;
 
-    @Autowired
-    private final MovieReviewService movieReviewService;
 
-
-     public CommentController(CommentService commentService, MovieReviewService movieReviewService) {
+    public CommentController(CommentService commentService, MovieReviewService movieReviewService) {
         this.commentService = commentService;
-        this.movieReviewService = movieReviewService;
-     }
+    }
 
     // for saving a comment...
     @PostMapping("/create")
@@ -56,6 +53,26 @@ public class CommentController {
         return ResponseEntity.ok(comments);
     }
 
+    //For updating the comment...
+    @PutMapping("/edit/{id}/{userId}")
+    public ResponseEntity<?> updateComment(@PathVariable Long id, @PathVariable int userId, @Valid @RequestBody CommentDTO commentDTO) {
+        System.out.println("Received request to update comment with ID: " + id + " by user: " + userId);
+        System.out.println("Comment data: " + commentDTO);
 
+        try {
+            Optional<CommentDTO> updatedComment = commentService.updatedComment(id, commentDTO, userId);
+
+            if (updatedComment.isPresent()) {
+                System.out.println("Comment successfully updated: " + updatedComment.get());
+                return new ResponseEntity<>(updatedComment.get(), HttpStatus.OK);
+            } else {
+                System.out.println("Comment not found or unauthorized");
+                return new ResponseEntity<>("Comment not found or unauthorized", HttpStatus.NOT_FOUND);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>("An error occurred while updating the comment", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
 }

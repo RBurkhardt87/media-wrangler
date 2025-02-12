@@ -7,6 +7,7 @@ import AvatarHeader from '../Profile/AvatarHeader';
 import { submitUserComment, fetchCommentsByMovieReviewId } from '../../Services/CommentService';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import PropTypes from 'prop-types';
+import CommentCard from './CommentCard';
 
 
 const MovieReviewListCard = ({ rating, award, review, username, firstname, lastname, title, movieReviewId, dateWatched, isSpoiler }) => {
@@ -16,6 +17,9 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
   const [userComments, setUserComments] = useState([]);
   const [error, setError] = useState('');
  
+  const [showComments, setShowComments] = useState(false);
+
+
   const { user } = useAuth();
   const navigate = useNavigate();
 
@@ -44,7 +48,9 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
     setShowCommentBox(false);
   }
 
-
+  const toggleComments = () => {
+    setShowComments(prev => !prev);
+  };
 
   async function handleSaveComment(e) {
     e.preventDefault();
@@ -65,9 +71,12 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
       userComment,
       userId,
       movieReviewId, 
-      username     
+      username: user.username,
+      firstname: user.firstname,
+      lastname: user.lastname   
     }
-  
+
+ 
   
     try {
       const responseMessage = await submitUserComment(userCommentData); 
@@ -78,6 +87,8 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
         const newComment = {
           id: Date.now(),
           username: user.username,
+          firstname: user.firstname,
+          lastname: user.lastname,  
           userComment
         };
 
@@ -120,6 +131,7 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
               <AvatarHeader 
                 firstname = { firstname }
                 lastname = { lastname }
+                styling = { "review-avatar" }
               />
               <div className='username-profile-link'>                       
                 { username } 
@@ -148,25 +160,15 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
                         backgroundColor: "white", 
                         height: "1px", 
                       }}/>
-          <div className="comments-section">
-            <Typography variant="body2">User Comments :</Typography>
-            <br />
-            {userComments.length === 0 ? (
-            <Typography variant="body2">No comments. Be the first to comment...</Typography>
-            ) : (
-              userComments.map((comment) => (
-                <div key={comment.id} className="comment-card">
-                  <Typography variant="body2">
-                    <span style={{color: "rgba(249, 79, 0, 0.55)", fontSize: "20px"}}><b>{comment.username}</b></span> : {comment.userComment}
-                  </Typography>
-                </div>
-              ))
-            )}
-          </div> 
-
           <CardActions>
+          <Button size="small" onClick={ toggleComments }>
+            {showComments ? "Hide Comments" : "View Comments"} ({ userComments.length })
+          </Button>
             <Button size="small" onClick={handleCommentClick} >Comment</Button>
           </CardActions>
+          {showComments && userComments.map(comment => (
+            <CommentCard key={comment.id} comment={comment} />
+          ))}
           {showCommentBox && (
             <CardContent>
               <TextField

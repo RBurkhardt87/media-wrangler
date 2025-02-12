@@ -2,7 +2,7 @@ import React from 'react'
 import { Avatar } from '@mui/material';
 import { useAuth } from '../../Services/AuthContext';
 
-function AvatarHeader({ firstname, lastname }) {
+function AvatarHeader({ firstname, lastname, styling }) {
 
    const { user } = useAuth();
 
@@ -13,7 +13,7 @@ function AvatarHeader({ firstname, lastname }) {
 
   return (
     <div>
-       <Avatar className="review-avatar">
+       <Avatar className={ styling }>
           <span className="avatar-initials">
           {getInitials( firstname + " " + lastname)}
           </span>

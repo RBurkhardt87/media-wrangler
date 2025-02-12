@@ -73,6 +73,13 @@
 
 /* User reviews & comments (MovieReviewListCard) */
 
+.username-profile-link-comment {
+  font-size: 22px;
+  color: rgba(249, 79, 0, 0.55);
+  margin-left: 0px;
+}                 
+
+
 .comments-section {
   margin: 20px;
   color: white;

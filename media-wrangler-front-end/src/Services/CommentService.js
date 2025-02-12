@@ -22,6 +22,8 @@ async function submitUserComment(userCommentData) {
 
 
 async function fetchCommentsByMovieReviewId(movieReviewId) {
+    console.log("movieReviewId: ", movieReviewId);
+    
     try {
         const response = await axios.get(`http://localhost:8080/comments/review/${movieReviewId}`, { withCredentials: true });
 
@@ -39,4 +41,48 @@ async function fetchCommentsByMovieReviewId(movieReviewId) {
     }
 };
 
-export { submitUserComment, fetchCommentsByMovieReviewId };
+async function fetchCommentByUserIdAndMovieReviewId(id, userId) {
+    try {
+        const response = await axios.get(`http://localhost:8080/replies/edit/${id}/${userId}`, { withCredentials: true });
+
+        if (response.status === 200) {
+            const reviewData = response.data;
+            console.log('Comment data:', reviewData);
+            return reviewData;
+        } else {
+            return "Comment not found or error occurred. Please try again";
+        }
+    } catch (error) {
+        console.log("Error: ", error);
+        return "An error occurred. Please try again";
+    }
+};
+
+
+async function updateComment(updatedData) {
+    console.log("is it getting here...");
+    console.log("userId param: ", updatedData.userId);
+    console.log("id param: ", updatedData.id);
+    try {
+        console.log("Updating comment with data:", updatedData);
+      
+    
+        const response = await axios.put(
+            `http://localhost:8080/comments/edit/${updatedData.id}/${updatedData.userId}`,
+            updatedData, {
+                withCredentials: true,
+            }
+        );
+        console.log("Response:", response);
+        if (response.status === 200) {
+            console.log("Updating comment");
+            return "Success"
+        } else {
+            return ("Comment edit failed. Please try again");
+        }
+    } catch (error) {
+        return ("An error occurred. Please try again", error);
+    }
+}
+
+export { submitUserComment, fetchCommentsByMovieReviewId, fetchCommentByUserIdAndMovieReviewId, updateComment };

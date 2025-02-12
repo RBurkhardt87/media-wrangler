@@ -20,4 +20,6 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     //find all comments written by a single user
     List<Comment> findByUserId(Long userId);
 
+    Optional<Comment> findByIdAndUserId(Long id, int userId);
+
 }
