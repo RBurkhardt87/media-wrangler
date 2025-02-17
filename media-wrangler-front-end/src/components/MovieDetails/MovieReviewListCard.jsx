@@ -16,14 +16,20 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
   const [userComment, setUserComment] = useState('');
   const [userComments, setUserComments] = useState([]);
   const [error, setError] = useState('');
- 
   const [showComments, setShowComments] = useState(false);
 
 
+  //NOTE: I can use this state value as a dependency that will retrigger when a comment is edited... 
+  const [refreshTrigger, setRefreshTrigger] = useState(false);
+
+  const [showButtonsTrigger, setShowButtonsTrigger] = useState(false);
+ 
+  
   const { user } = useAuth();
   const navigate = useNavigate();
 
 
+  //NOTE: added the refreshTrigger to the dependencies
   useEffect(() => {
     async function fetchComments() {
       const data = await fetchCommentsByMovieReviewId(movieReviewId);  
@@ -31,7 +37,14 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
     }
   
     fetchComments();
-  }, [movieReviewId]);  
+  }, [movieReviewId, refreshTrigger]);  
+
+
+  //NOTE: this function will be passed to the CommentCard as the onUpdate that will be called when comment is edited...
+  const handleCommentUpdate = () => {
+    setRefreshTrigger(prev => !prev); 
+    setShowButtonsTrigger(prev => !prev);
+  };
 
 
 
@@ -84,16 +97,9 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
       if (responseMessage === "Success") {
         console.log("Comment saved successfully!");
 
-        const newComment = {
-          id: Date.now(),
-          username: user.username,
-          firstname: user.firstname,
-          lastname: user.lastname,  
-          userComment
-        };
 
-        setUserComments((prevComments) => [...prevComments, newComment])
-
+        handleCommentUpdate();
+        
       } else {
         setError(responseMessage);
       }
@@ -167,7 +173,7 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
             <Button size="small" onClick={handleCommentClick} >Comment</Button>
           </CardActions>
           {showComments && userComments.map(comment => (
-            <CommentCard key={comment.id} comment={comment} />
+            <CommentCard key={comment.id} comment={comment} onUpdate={handleCommentUpdate} showButtonsTrigger={showButtonsTrigger} />
           ))}
           {showCommentBox && (
             <CardContent>

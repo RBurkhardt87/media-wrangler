@@ -5,7 +5,8 @@ import AvatarHeader from '../Profile/AvatarHeader';
 import '../../stylings/MovieDetailsPage.css';
 import { updateComment } from '../../Services/CommentService';
 
-const CommentCard = ({ comment, updatedComment }) => {
+
+const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
     const [showUserButtons, setShowUserButtons] = useState(false);
     const [showReplyButton, setReplyButton] = useState(false);
     const [isEditing, setEditing] = useState(false);
@@ -16,28 +17,32 @@ const CommentCard = ({ comment, updatedComment }) => {
     useEffect(() => {
         if (user.id === comment.userId) {
             setShowUserButtons(true);
-            setReplyButton(false);
+        } else {
+            setReplyButton(true);
         }
-    }, [user, comment]);
+    }, [user, comment.userId, comment.userComment, showButtonTrigger]);
 
     function handleEditClick() {
         setEditing(true);
     }
 
+
+
+    //NOTE: By adding in the onUpdate, it will toggle the refreshTrigger state in MovieReviewListCard-- which then will retrigger useEffect that's fetching the comments... 
     async function handleSaveClick() {
         const updatedData = { ...comment, userComment: editedText };
         const response = await updateComment(updatedData);
 
         if (response === "Success") {
             setEditing(false);
-            updatedComment(comment.id, editedText); // Update parent state
+            onUpdate();
         } else {
             console.error("Failed to update comment");
         }
     }
 
     function handleCancelClick() {
-        setEditedText(comment.userComment); /
+        setEditedText(comment.userComment);
         setEditing(false);
     }
 
@@ -64,16 +69,32 @@ const CommentCard = ({ comment, updatedComment }) => {
                 <div className="comments-section">
                     {isEditing ? (
                         <TextField
+                            label= "Edit Comment"
                             fullWidth
-                            variant="outlined"
-                            size="small"
+                            multiline
                             value={editedText}
                             onChange={(e) => setEditedText(e.target.value)}
+                            sx={{ marginBottom: 2,
+                                "& .MuiInputBase-root": {
+                                  color: "white", 
+                                },
+                                "& .MuiInputLabel-root": {
+                                  color: "white", 
+                                },
+                                "& .MuiOutlinedInput-notchedOutline": {
+                                  borderColor: "white", 
+                                },
+                                "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+                                  borderColor: "#ff8f00", 
+                                }, }}
                         />
                     ) : (
-                        <Typography variant="body2">{comment.userComment}</Typography>
+                        <Typography variant="body2">
+                            {comment.userComment}
+                        </Typography>
                     )}
-                </div> 
+                </div>
+
 
                 <CardActions>
                     {showReplyButton && <Button size="small" onClick={handleReplyClick}>Reply</Button>}
