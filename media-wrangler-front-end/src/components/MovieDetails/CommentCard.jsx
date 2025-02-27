@@ -51,6 +51,7 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
         const response = await deleteComment(comment);
 
         if (response === "Success") {
+            onUpdate();
             console.log("Comment deletion successful");
         } else {
             console.error("Failed to delete comment");

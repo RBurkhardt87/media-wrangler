@@ -75,28 +75,7 @@ public class CommentController {
         }
     }
 
-//    @DeleteMapping("/delete/{id}/{userId}")
-//    public ResponseEntity<?> deleteComment(@PathVariable Long id, @PathVariable int userId, @RequestBody CommentDTO commentDTO) {
-//
-//        System.out.println("Received request to delete comment with ID: " + id + "by user: " + userId);
-//        System.out.println("Comment data: " + commentDTO);
-//
-//        try {
-//            Optional<CommentDTO> deletedComment = commentService.findCommentById(id);
-//
-//            if (deletedComment.isPresent()) {
-//                System.out.println("Comment successfully deleted: " + deletedComment.get());
-//
-//                commentService.deleteById(id, userId);
-//                return new ResponseEntity<>(deletedComment.get(), HttpStatus.OK);
-//            } else {
-//                return new ResponseEntity<>("Comment not found or unauthorized", HttpStatus.NOT_FOUND);
-//            }
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return new ResponseEntity<>("An error occurred while deleting the comment", HttpStatus.NOT_FOUND);
-//        }
-//    }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<?> deleteComment(@PathVariable Long id) {

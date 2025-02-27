@@ -23,7 +23,8 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
   const [refreshTrigger, setRefreshTrigger] = useState(false);
 
   const [showButtonsTrigger, setShowButtonsTrigger] = useState(false);
- 
+
+   
   
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
   }, [movieReviewId, refreshTrigger]);  
 
 
-  //NOTE: this function will be passed to the CommentCard as the onUpdate that will be called when comment is edited...
+  //NOTE: this function will be passed to the CommentCard as the onUpdate that will be called when comment is edited... by using onUpdate within the delete function inside the CommentCard component, it automatically toggles and re-fetches as desired when the comment is deleted
   const handleCommentUpdate = () => {
     setRefreshTrigger(prev => !prev); 
     setShowButtonsTrigger(prev => !prev);
@@ -173,7 +174,12 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
             <Button size="small" onClick={handleCommentClick} >Comment</Button>
           </CardActions>
           {showComments && userComments.map(comment => (
-            <CommentCard key={comment.id} comment={comment} onUpdate={handleCommentUpdate} showButtonsTrigger={showButtonsTrigger} />
+            <CommentCard 
+              key={comment.id} 
+              comment={comment} 
+              onUpdate={handleCommentUpdate} 
+              showButtonsTrigger={showButtonsTrigger}
+            />
           ))}
           {showCommentBox && (
             <CardContent>

@@ -133,19 +133,7 @@ public class CommentService {
         return Optional.empty();
     }
 
-//    public Optional<CommentDTO> deleteById(Long id, int userId) {
-//        Optional<Comment> comment = commentRepository.findByIdAndUserId(id, userId);
-//
-//        if (comment.isPresent()) {
-//            Comment deleteComment = comment.get();
-//            commentRepository.delete(deleteComment);
-//
-//            CommentDTO commentDTO = new CommentDTO(deleteComment);
-//            return Optional.of(commentDTO);
-//        } else {
-//            return Optional.empty();
-//        }
-//    }
+
 
 public void deleteById(Long id) {
     Optional<Comment> comment = commentRepository.findById(id);
