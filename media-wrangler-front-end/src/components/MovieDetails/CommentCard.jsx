@@ -19,6 +19,8 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
     const [userReplies, setUserReplies] = useState([]);
     const [showReplies, setShowReplies] = useState(false);
     const [error, setError] = useState('');
+    const [refreshReply, setRefreshReply] = useState(false);
+    const [showButtonsTrigger, setShowButtonsTrigger] = useState(false);
 
     const { user } = useAuth();
     const navigate = useNavigate();
@@ -41,7 +43,13 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
         }
       
         fetchReplies();
-      }, [commentId]);  
+      }, [commentId, refreshReply]);  
+
+
+    const handleReplyUpdate = () => {
+    setRefreshReply(prev => !prev); 
+    setShowButtonsTrigger(prev => !prev);
+    };
 
     function handleEditClick() {
         setEditing(true);
@@ -134,7 +142,8 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
             const responseMessage = await submitUserReply(userReplyData); 
       
             if (responseMessage === "Success") {
-              console.log("Comment saved successfully!");
+                handleReplyUpdate();
+                console.log("Comment saved successfully!");
               
             } else {
               setError(responseMessage);
@@ -233,9 +242,11 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
                     <ReplyCard 
                         key={userReply.id} 
                         userReply={userReply} 
+                        onUpdate={handleReplyUpdate} 
+                        showButtonsTrigger={showButtonsTrigger}
                     />
                 ))}
-                
+
 
                 {showReplyBox && (
                     <CardContent>

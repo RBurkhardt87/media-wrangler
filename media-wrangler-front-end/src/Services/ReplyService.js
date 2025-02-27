@@ -41,6 +41,33 @@ async function fetchRepliesByCommentId(commentId) {
         console.log("Error: ", error);
         return "An error occurred. Please try again";
     }
-};
+}
 
-export { submitUserReply, fetchRepliesByCommentId };
+
+async function updateReply(updatedData) {
+    console.log("is it getting here...");
+    console.log("userId param: ", updatedData.userId);
+    console.log("id param: ", updatedData.id);
+    try {
+        console.log("Updating comment with data:", updatedData);
+      
+    
+        const response = await axios.put(
+            `http://localhost:8080/replies/edit/${updatedData.id}/${updatedData.userId}`,
+            updatedData, {
+                withCredentials: true,
+            }
+        );
+        console.log("Response:", response);
+        if (response.status === 200) {
+            console.log("Updating comment");
+            return "Success"
+        } else {
+            return ("Comment edit failed. Please try again");
+        }
+    } catch (error) {
+        return ("An error occurred. Please try again", error);
+    }
+}
+
+export { submitUserReply, fetchRepliesByCommentId, updateReply };

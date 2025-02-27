@@ -9,6 +9,8 @@ public class ReplyDTO {
     private Long commentId;
     private int userId;
     private String username;
+    private String firstname;
+    private String lastname;
     private LocalDate dateCreated;
 
 
@@ -16,13 +18,16 @@ public class ReplyDTO {
     public ReplyDTO() {
     }
 
-    public ReplyDTO(Long id, String userReply, Long commentId, int userId, String username, LocalDate dateCreated) {
+    public ReplyDTO(Long id, String userReply, Long commentId, int userId, String username,
+                    LocalDate dateCreated, String firstname, String lastname) {
         this.id = id;
         this.userReply = userReply;
         this.commentId = commentId;
         this.userId = userId;
         this.username = username;
         this.dateCreated = dateCreated;
+        this.firstname = firstname;
+        this.lastname = lastname;
     }
 
 
@@ -73,5 +78,21 @@ public class ReplyDTO {
 
     public void setDateCreated(LocalDate dateCreated) {
         this.dateCreated = dateCreated;
+    }
+
+    public String getFirstname() {
+        return firstname;
+    }
+
+    public void setFirstname(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastname() {
+        return lastname;
+    }
+
+    public void setLastname(String lastname) {
+        this.lastname = lastname;
     }
 }

@@ -9,11 +9,13 @@ import com.mediawrangler.media_wrangler.models.Comment;
 import com.mediawrangler.media_wrangler.models.MovieReview;
 import com.mediawrangler.media_wrangler.models.Reply;
 import com.mediawrangler.media_wrangler.models.User;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -78,7 +80,7 @@ public class ReplyService {
         // Once reply is saved -- Return a DTO with the necessary details
         return new ReplyDTO(savedReply.getId(), savedReply.getUserReply(),
                 savedReply.getComment().getId(), savedReply.getUser().getId(), savedReply.getUser().getUsername(),
-                savedReply.getDateCreated());
+                savedReply.getDateCreated(), savedReply.getUser().getFirstname(), savedReply.getUser().getLastname());
     }
 
     //* retrieve all the replies to a comment...
@@ -112,9 +114,38 @@ public class ReplyService {
                         reply.getComment().getId(),
                         reply.getUser().getId(),
                         reply.getUser().getUsername(),
-                        reply.getDateCreated()  // If needed
+                        reply.getDateCreated(),
+                        reply.getUser().getFirstname(),
+                        reply.getUser().getLastname()
                 ))
                 .collect(Collectors.toList());
+    }
+
+    public Optional<ReplyDTO> updatedReply(Long id, ReplyDTO incomingReply, int userId) {
+        Optional<Reply> optionalReply = replyRepository.findByIdAndUserId(id, userId);
+
+        if (optionalReply.isPresent()) {
+            Reply reply = optionalReply.get();
+
+            reply.setUserReply(incomingReply.getUserReply());
+
+            Reply updatedReply = replyRepository.save(reply);
+            System.out.println("Updated reply: " + updatedReply.getUserReply());
+
+            ReplyDTO replyDTO = new ReplyDTO();
+
+            replyDTO.setId(reply.getId());
+            replyDTO.setUserId(reply.getUser().getId());
+            replyDTO.setUserReply(reply.getUserReply());
+            replyDTO.setCommentId(reply.getComment().getId());
+            replyDTO.setUsername(reply.getUser().getUsername());
+            replyDTO.setFirstname(reply.getUser().getFirstname());
+            replyDTO.setLastname(reply.getUser().getLastname());
+
+            return Optional.of(replyDTO);
+        }
+
+        return Optional.empty();
     }
 
 }
