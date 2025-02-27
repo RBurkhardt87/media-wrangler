@@ -10,6 +10,8 @@ import com.mediawrangler.media_wrangler.models.Rating;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.html.Option;
+
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
@@ -20,6 +22,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     //find all comments written by a single user
     List<Comment> findByUserId(Long userId);
 
+    //find comment by id and userId
     Optional<Comment> findByIdAndUserId(Long id, int userId);
+
+
 
 }

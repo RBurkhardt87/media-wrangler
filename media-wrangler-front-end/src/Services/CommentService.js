@@ -1,5 +1,7 @@
 import axios from "axios";
 
+
+
 async function submitUserComment(userCommentData) {
     try {
         const response = await axios.post(
@@ -85,4 +87,33 @@ async function updateComment(updatedData) {
     }
 }
 
-export { submitUserComment, fetchCommentsByMovieReviewId, fetchCommentByUserIdAndMovieReviewId, updateComment };
+
+async function deleteComment(comment) {
+    console.log("Is it reaching the comment service?");
+    console.log("deleting comment: ", comment);
+    console.log("comment id:", comment.id);
+   
+
+    try {
+        const response = await axios.delete(
+            `http://localhost:8080/comments/delete/${comment.id}`, 
+            { 
+                withCredentials: true,
+            }
+        );
+        console.log("Response: ", response);
+
+        if (response.status === 200 ){
+            console.log("Deleting Comment");
+            return "Success"
+        } else {
+            return ("Comment deletion failed. Please try again.");
+        }
+    } catch (error) {
+        return ("An error occurred. Please try again ", error);
+    }
+}
+
+
+
+export { submitUserComment, fetchCommentsByMovieReviewId, fetchCommentByUserIdAndMovieReviewId, updateComment, deleteComment };

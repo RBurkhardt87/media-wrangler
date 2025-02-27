@@ -3,7 +3,8 @@ import { Typography, Button, Card, CardActions, TextField } from '@mui/material'
 import { useAuth } from '../../Services/AuthContext';
 import AvatarHeader from '../Profile/AvatarHeader';
 import '../../stylings/MovieDetailsPage.css';
-import { updateComment } from '../../Services/CommentService';
+import { updateComment, deleteComment } from '../../Services/CommentService';
+
 
 
 const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
@@ -46,8 +47,15 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
         setEditing(false);
     }
 
-    function handleDeleteClick() {
-        console.log("user clicked delete");
+    async function handleDeleteClick() {
+        const response = await deleteComment(comment);
+
+        if (response === "Success") {
+            console.log("Comment deletion successful");
+        } else {
+            console.error("Failed to delete comment");
+        }
+
     }
 
     function handleReplyClick() {

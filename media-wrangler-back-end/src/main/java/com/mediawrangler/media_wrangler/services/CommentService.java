@@ -4,18 +4,14 @@ import com.mediawrangler.media_wrangler.data.CommentRepository;
 import com.mediawrangler.media_wrangler.data.MovieReviewRepository;
 import com.mediawrangler.media_wrangler.data.UserRepository;
 import com.mediawrangler.media_wrangler.dto.CommentDTO;
-import com.mediawrangler.media_wrangler.dto.MovieReviewDTO;
-import com.mediawrangler.media_wrangler.dto.RatingDTO;
 import com.mediawrangler.media_wrangler.models.Comment;
 
 
 import com.mediawrangler.media_wrangler.models.MovieReview;
-import com.mediawrangler.media_wrangler.models.Rating;
 import com.mediawrangler.media_wrangler.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -114,9 +110,7 @@ public class CommentService {
         if (optionalComment.isPresent()) {
             Comment comment = optionalComment.get();
 
-
             comment.setUserComment(incomingComment.getUserComment());
-
 
             Comment updatedComment = commentRepository.save(comment);
             System.out.println("Updated comment: " + updatedComment.getUserComment());
@@ -138,6 +132,32 @@ public class CommentService {
 
         return Optional.empty();
     }
+
+//    public Optional<CommentDTO> deleteById(Long id, int userId) {
+//        Optional<Comment> comment = commentRepository.findByIdAndUserId(id, userId);
+//
+//        if (comment.isPresent()) {
+//            Comment deleteComment = comment.get();
+//            commentRepository.delete(deleteComment);
+//
+//            CommentDTO commentDTO = new CommentDTO(deleteComment);
+//            return Optional.of(commentDTO);
+//        } else {
+//            return Optional.empty();
+//        }
+//    }
+
+public void deleteById(Long id) {
+    Optional<Comment> comment = commentRepository.findById(id);
+
+    if (comment.isPresent()) {
+        Comment deleteComment = comment.get();
+        commentRepository.delete(deleteComment);
+
+        CommentDTO commentDTO = new CommentDTO(deleteComment);
+    }
+}
+
 
 
 }

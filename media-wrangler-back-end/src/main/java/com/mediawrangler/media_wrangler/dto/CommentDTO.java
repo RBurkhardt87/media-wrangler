@@ -1,5 +1,7 @@
 package com.mediawrangler.media_wrangler.dto;
 
+import com.mediawrangler.media_wrangler.models.Comment;
+
 public class CommentDTO {
 
 
@@ -25,6 +27,11 @@ public class CommentDTO {
         this.firstname = firstname;
         this.lastname = lastname;
     }
+
+    //This is to be able to store a deleted comment in a DTO to return which comment has been deleted...
+    public CommentDTO(Comment deleteComment) {
+    }
+
 
     public Long getId() {
         return id;
