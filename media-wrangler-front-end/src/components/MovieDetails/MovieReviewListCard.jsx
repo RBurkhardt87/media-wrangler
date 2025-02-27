@@ -21,7 +21,6 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
 
   //NOTE: I can use this state value as a dependency that will retrigger when a comment is edited... 
   const [refreshTrigger, setRefreshTrigger] = useState(false);
-
   const [showButtonsTrigger, setShowButtonsTrigger] = useState(false);
 
    
@@ -48,6 +47,7 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
   };
 
 
+  //Comment functionality...
 
   function handleCommentClick() {
     setShowCommentBox(prev => !prev);
@@ -62,6 +62,7 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
     setShowCommentBox(false);
   }
 
+  //NOTE: This is to toggle between comments being hidden or viewed. 
   const toggleComments = () => {
     setShowComments(prev => !prev);
   };
@@ -173,6 +174,8 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
           </Button>
             <Button size="small" onClick={handleCommentClick} >Comment</Button>
           </CardActions>
+
+          
           {showComments && userComments.map(comment => (
             <CommentCard 
               key={comment.id} 
@@ -181,6 +184,8 @@ const MovieReviewListCard = ({ rating, award, review, username, firstname, lastn
               showButtonsTrigger={showButtonsTrigger}
             />
           ))}
+
+
           {showCommentBox && (
             <CardContent>
               <TextField

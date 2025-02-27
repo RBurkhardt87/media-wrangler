@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Button, Card, CardActions, TextField } from '@mui/material';
+import { Typography, Button, Card, CardActions, TextField, CardContent, Divider } from '@mui/material';
 import { useAuth } from '../../Services/AuthContext';
 import AvatarHeader from '../Profile/AvatarHeader';
 import '../../stylings/MovieDetailsPage.css';
 import { updateComment, deleteComment } from '../../Services/CommentService';
-
+import { useNavigate } from 'react-router-dom';
+import { submitUserReply, fetchRepliesByCommentId } from '../../Services/ReplyService';
+import ReplyCard from './ReplyCard';
 
 
 const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
@@ -12,8 +14,15 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
     const [showReplyButton, setReplyButton] = useState(false);
     const [isEditing, setEditing] = useState(false);
     const [editedText, setEditedText] = useState(comment.userComment); 
+    const [showReplyBox, setShowReplyBox] = useState(false);
+    const [userReply, setUserReply] =  useState("");
+    const [userReplies, setUserReplies] = useState([]);
+    const [showReplies, setShowReplies] = useState(false);
+    const [error, setError] = useState('');
 
     const { user } = useAuth();
+    const navigate = useNavigate();
+    
 
     useEffect(() => {
         if (user.id === comment.userId) {
@@ -22,6 +31,17 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
             setReplyButton(true);
         }
     }, [user, comment.userId, comment.userComment, showButtonTrigger]);
+
+
+    const commentId = comment.id;
+    useEffect(() => {
+        async function fetchReplies() {
+          const data = await fetchRepliesByCommentId(commentId);  
+          setUserReplies(data);  
+        }
+      
+        fetchReplies();
+      }, [commentId]);  
 
     function handleEditClick() {
         setEditing(true);
@@ -59,9 +79,82 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
 
     }
 
-    function handleReplyClick() {
-        console.log("user clicked reply");
+
+
+    //Reply Functionality...
+
+    //NOTE: this will allow replies to be visible or hidden...
+    const toggleReplies = () => {
+        setShowReplies(prev => !prev);
+    };
+
+    //NOTE: by toggling on Reply Click, user can cancel creating a reply without actually hitting the cancel button
+    function handleReplyClick(){
+        setShowReplyBox(prev => !prev);
     }
+
+    function handleReplyChange(event){
+        setUserReply(event.target.value);
+    }
+
+    function handleCancelReply(){
+        setUserReply("");
+        setShowReplyBox(false);
+    }
+
+    async function handleSaveReply(e) {
+        e.preventDefault();
+
+        if(!user) {
+          alert("You must be logged in to write a reply");
+          navigate('/login');
+        }
+        if(!userReply) {   
+            alert("You must write a reply or press cancel");
+            return;
+          }
+          
+          const userId = user.id;
+          const commentId = comment.id;
+      
+          const userReplyData = { 
+            userReply,
+            userId,
+            commentId, 
+            username: user.username,
+            firstname: user.firstname,
+            lastname: user.lastname   
+          }
+      
+
+          console.log("This is the userReplyData:", userReplyData);
+       
+        
+          try {
+            const responseMessage = await submitUserReply(userReplyData); 
+      
+            if (responseMessage === "Success") {
+              console.log("Comment saved successfully!");
+              
+            } else {
+              setError(responseMessage);
+            }
+            
+          } catch (error) {
+              console.error("Unexpected error during user reply submission: ", error);
+              setError({error: "An unexpected error occurred. Please try again"});
+      
+          } finally {
+            setUserReply('');
+            setShowReplyBox(false); 
+          }
+        };
+
+
+     
+    
+
+
 
     return (
         <div>
@@ -124,6 +217,52 @@ const CommentCard = ({ comment, onUpdate, showButtonTrigger }) => {
                         </div>
                     )}
                 </CardActions>
+                <Divider sx={{
+                        margin: "15px",
+                        backgroundColor: "white", 
+                        height: "1px", 
+                      }}/>
+                <CardActions>
+                    <Button size="small" onClick={ toggleReplies }>
+                        {showReplies ? "Hide Replies" : "View replies"} ({ userReplies.length })
+                    </Button>
+                </CardActions>
+
+
+                {showReplies && userReplies.map(userReply => (
+                    <ReplyCard 
+                        key={userReply.id} 
+                        userReply={userReply} 
+                    />
+                ))}
+                
+
+                {showReplyBox && (
+                    <CardContent>
+                    <TextField
+                        label="Write a reply"
+                        fullWidth
+                        multiline
+                        value={userReply}
+                        onChange={handleReplyChange}
+                        sx={{ marginBottom: 2,
+                            "& .MuiInputBase-root": {
+                                color: "white", 
+                            },
+                            "& .MuiInputLabel-root": {
+                                color: "white", 
+                            },
+                            "& .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "white", 
+                            },
+                            "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline": {
+                                borderColor: "#ff8f00", 
+                            }, }}
+                    />            
+                    <Button size="small" onClick={handleSaveReply}>Save</Button>
+                    <Button size="small" onClick={handleCancelReply} >Cancel </Button>
+                    </CardContent>
+                )}
             </Card>
         </div>    
     );

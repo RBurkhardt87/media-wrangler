@@ -26,16 +26,6 @@ public class ReplyController {
 
 
 
-//    @PostMapping("/create")
-//    public ResponseEntity<?> createReply(@RequestBody ReplyDTO replyDTO) {
-//        try {
-//            ReplyDTO savedReply = replyService.addUserReply(replyDTO);
-//            return new ResponseEntity<>("Reply was submitted successfully", HttpStatus.CREATED);
-//        } catch (Exception e) {
-//            return new ResponseEntity<>("An error occurred while saving the reply", HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
-
     //* creating/submitting a user reply but with more info for debugging. Returning the actual reply being saved. Using
     //* RuntimeException is more specific handling and actually retrieving the error message.
     @PostMapping("/create")
@@ -51,16 +41,14 @@ public class ReplyController {
     }
 
 
-    // for rendering all replies associated with a comment ... the if conditional returns a 404 if the list is empty
+
     @GetMapping("/view/{commentId}")
     public ResponseEntity<List<ReplyDTO>> getCommentsByMovieReviewId(@PathVariable Long commentId) {
         List<ReplyDTO> replies = replyService.findRepliesByCommentId(commentId);
 
-        if (replies.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-
+        // this will return an array, whether it is empty or not
         return ResponseEntity.ok(replies);
     }
+
 
 }
